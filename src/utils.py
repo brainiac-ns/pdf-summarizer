@@ -36,7 +36,6 @@ def starts_with_figure_number(string: str) -> bool:
     Returns:
         bool: True if string starts with Figure :, False otherwise
     """
-    print(string)
     pattern = r"^Figure \d+:"
     match1 = re.match(pattern, string)
     return match1 is None
