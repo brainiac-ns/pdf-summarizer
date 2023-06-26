@@ -31,7 +31,7 @@ class TestIntegration(unittest.TestCase):
         print(strings[0].replace('\n', ''))
         print(extracting_text[0])
         self.assertEqual(strings[0].replace('\n', '').split()[0], extracting_text[0].split()[0])
- ;
+
     def tearDown(self) -> None:
         if os.path.exists(self.test_data_dir):
             shutil.rmtree(self.test_data_dir)
