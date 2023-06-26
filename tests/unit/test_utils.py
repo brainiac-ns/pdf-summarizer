@@ -1,4 +1,6 @@
 import unittest
+import os
+import fitz
 
 from utils import (
     check_if_short_text,
