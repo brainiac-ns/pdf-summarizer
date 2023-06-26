@@ -1,7 +1,7 @@
 import unittest
 import os
 import fitz
-
+import shutil
 from utils import (
     check_if_short_text,
     check_if_table,
@@ -13,6 +13,12 @@ from utils import (
 
 
 class TestUtils(unittest.TestCase):
+    def setUp(self):
+        self.test_data_dir = "test_data"
+        if os.path.exists(self.test_data_dir):
+            shutil.rmtree(self.test_data_dir)
+        os.mkdir(self.test_data_dir)
+
     def test_check_if_table(self):
         # Test case 1: Valid table with more than 1 row of numbers
         table1 = "1\n2\n3\n"
@@ -97,7 +103,9 @@ class TestUtils(unittest.TestCase):
         print("Extracted:", extracted[0])
         self.assertIn("The dominant sequence tran", extracted[0])
 
-        
+    def tearDown(self):
+        if os.path.exists(self.test_data_dir):
+            shutil.rmtree(self.test_data_dir)
 
 
 if __name__ == "__main__":
