@@ -69,6 +69,3 @@ __pycache__/
 *.swp
 *~
 *.DS_Store
-
-# Custom
-*.pdf

@@ -1,14 +1,24 @@
 import unittest
-
+import os
+import fitz
+import shutil
 from utils import (
     check_if_short_text,
     check_if_table,
     starts_with_figure_number,
     starts_with_table_number,
+    extract_text,
+    write_list_to_pdf
 )
 
 
 class TestUtils(unittest.TestCase):
+    def setUp(self):
+        self.test_data_dir = "test_data"
+        if os.path.exists(self.test_data_dir):
+            shutil.rmtree(self.test_data_dir)
+        os.mkdir(self.test_data_dir)
+
     def test_check_if_table(self):
         # Test case 1: Valid table with more than 1 row of numbers
         table1 = "1\n2\n3\n"
@@ -69,6 +79,33 @@ class TestUtils(unittest.TestCase):
         # Test case 4: Empty text
         text4 = ""
         self.assertTrue(check_if_short_text(text4))
+
+    def test_write_list_to_pdf(self):
+        strings = ["Hello, World! This is a test. Writing to PDF.", "Tomica testing"]
+        path_to_pdf = os.path.join(self.test_data_dir, "test_output.pdf")
+
+        write_list_to_pdf(strings, path_to_pdf)
+        self.assertTrue(os.path.exists(path_to_pdf))
+
+        self.assertGreater(os.path.getsize(path_to_pdf), 0)
+
+        doc = fitz.open(path_to_pdf)
+        extracted_text = []
+        for page in doc:
+            extracted_text.append(page.get_text())
+        for string in strings:
+            self.assertIn(string, " ".join(extracted_text))
+
+        doc.close()
+
+    def test_extract_text(self):
+        extracted = extract_text("uploads/input.pdf")
+        print("Extracted:", extracted[0])
+        self.assertIn("The dominant sequence tran", extracted[0])
+
+    def tearDown(self):
+        if os.path.exists(self.test_data_dir):
+            shutil.rmtree(self.test_data_dir)
 
 
 if __name__ == "__main__":
