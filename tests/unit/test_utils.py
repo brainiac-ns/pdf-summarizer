@@ -5,6 +5,8 @@ from utils import (
     check_if_table,
     starts_with_figure_number,
     starts_with_table_number,
+    extract_text,
+    write_list_to_pdf
 )
 
 
@@ -69,6 +71,31 @@ class TestUtils(unittest.TestCase):
         # Test case 4: Empty text
         text4 = ""
         self.assertTrue(check_if_short_text(text4))
+
+    def test_write_list_to_pdf(self):
+        strings = ["Hello, World! This is a test. Writing to PDF.", "Tomica testing"]
+        path_to_pdf = os.path.join(self.test_data_dir, "test_output.pdf")
+
+        write_list_to_pdf(strings, path_to_pdf)
+        self.assertTrue(os.path.exists(path_to_pdf))
+
+        self.assertGreater(os.path.getsize(path_to_pdf), 0)
+
+        doc = fitz.open(path_to_pdf)
+        extracted_text = []
+        for page in doc:
+            extracted_text.append(page.get_text())
+        for string in strings:
+            self.assertIn(string, " ".join(extracted_text))
+
+        doc.close()
+
+    def test_extract_text(self):
+        extracted = extract_text("uploads/input.pdf")
+        print("Extracted:", extracted[0])
+        self.assertIn("The dominant sequence tran", extracted[0])
+
+        
 
 
 if __name__ == "__main__":
