@@ -99,7 +99,7 @@ class TestUtils(unittest.TestCase):
         doc.close()
 
     def test_extract_text(self):
-        extracted = extract_text("integration/test_data/input.pdf")
+        extracted = extract_text("tests/integration/test_data/input.pdf")
         print("Extracted:", extracted[0])
         self.assertIn("The dominant sequence tran", extracted[0])
 

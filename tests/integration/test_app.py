@@ -13,7 +13,7 @@ class TestIntegration(unittest.TestCase):
         os.mkdir(self.test_data_dir)
 
     def test_integration(self) -> None:
-        extracted = extract_text("integration/test_data/input.pdf")
+        extracted = extract_text("tests/integration/test_data/input.pdf")
         extracted_text = extracted[0]
         expected_text = "The dominant sequence tran"
         self.assertIn(expected_text, extracted_text)
