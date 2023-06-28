@@ -1,14 +1,15 @@
-import unittest
 import os
-import fitz
 import shutil
+import unittest
+
+import fitz
 from utils import (
     check_if_short_text,
     check_if_table,
+    extract_text,
     starts_with_figure_number,
     starts_with_table_number,
-    extract_text,
-    write_list_to_pdf
+    write_list_to_pdf,
 )
 
 
@@ -81,7 +82,10 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(check_if_short_text(text4))
 
     def test_write_list_to_pdf(self):
-        strings = ["Hello, World! This is a test. Writing to PDF.", "Tomica testing"]
+        strings = [
+            "Hello, World! This is a test. Writing to PDF.",
+            "Tomica testing",
+        ]
         path_to_pdf = os.path.join(self.test_data_dir, "test_output.pdf")
 
         write_list_to_pdf(strings, path_to_pdf)

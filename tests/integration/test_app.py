@@ -1,7 +1,8 @@
-import unittest
 import os
-import fitz
 import shutil
+import unittest
+
+import fitz
 from utils import extract_text, write_list_to_pdf
 
 
@@ -19,18 +20,21 @@ class TestIntegration(unittest.TestCase):
         self.assertIn(expected_text, extracted_text)
         strings = [extracted_text]
 
-        output_pdf_path = os.path.join(self.test_data_dir, "integration_test.pdf")
+        output_pdf_path = os.path.join(self.test_data_dir, "test.pdf")
         write_list_to_pdf(strings, output_pdf_path)
         self.assertTrue(os.path.exists(output_pdf_path))
         self.assertGreater(os.path.getsize(output_pdf_path), 0)
         doc = fitz.open(output_pdf_path)
         extracting_text = []
         for page in doc:
-            extracting_text.append(page.get_text().replace('\n', ''))
+            extracting_text.append(page.get_text().replace("\n", ""))
         doc.close()
-        print(strings[0].replace('\n', ''))
+        print(strings[0].replace("\n", ""))
         print(extracting_text[0])
-        self.assertEqual(strings[0].replace('\n', '').split()[0], extracting_text[0].split()[0])
+        self.assertEqual(
+            strings[0].replace("\n", "").split()[0],
+            extracting_text[0].split()[0],
+        )
 
     def tearDown(self) -> None:
         if os.path.exists(self.test_data_dir):

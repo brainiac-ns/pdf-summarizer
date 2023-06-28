@@ -69,3 +69,7 @@ __pycache__/
 *.swp
 *~
 *.DS_Store
+
+# Custom
+summarized/
+uploads/*pdf
