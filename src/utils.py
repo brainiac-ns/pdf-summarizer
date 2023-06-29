@@ -1,5 +1,6 @@
 import re
-from typing import List
+import textwrap
+from typing import Dict, List
 
 import fitz
 from reportlab.pdfgen import canvas
@@ -73,7 +74,9 @@ def check_if_short_text(text: str) -> bool:
     return total < 3
 
 
-def write_list_to_pdf(strings: str, path_to_pdf: str = "uploads/output.pdf"):
+def write_list_to_pdf(
+    paragraphs: Dict[str, str], path_to_pdf: str = "uploads/output.pdf"
+):
     """
     Renders text to pdf
     Args:
@@ -85,8 +88,17 @@ def write_list_to_pdf(strings: str, path_to_pdf: str = "uploads/output.pdf"):
     c.setFontSize(10)
     y = 800
     items_num = 0
-    for string in strings:
-        for line in string.split("\n"):
+    for k, v in paragraphs.items():
+        c.drawString(20, y, k)
+        y -= 20
+        items_num += 1
+        if items_num == 40:
+            c.showPage()
+            c.setFontSize(10)
+            y = 800
+            items_num = 0
+
+        for line in textwrap.wrap(v, width=100):
             c.drawString(20, y, line)
             y -= 20
             items_num += 1
@@ -118,7 +130,11 @@ def extract_text(path_to_pdf: str = "data/input.pdf") -> List[str]:
             if len(a) == 1:
                 continue
 
-            if "References" in block[4] or "Acknowledgements" in block[4]:
+            if (
+                "References" in block[4]
+                or "Acknowledgements" in block[4]
+                or "Conclusion" in block[4]
+            ):
                 return extracted_text
             elif (
                 len(block[4]) > 100
