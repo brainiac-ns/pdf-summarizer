@@ -4,12 +4,31 @@ from time import time
 import streamlit as st
 from sum import summarize_pdf
 from utils import extract_text, write_list_to_pdf
-from text_summarization import to_summarize
 
 
 def save_uploaded_file(uploaded_file, save_path):
     with open(save_path, "wb") as file:
         file.write(uploaded_file.getbuffer())
+
+
+def download_file(filename):
+    summarized_path = os.path.join("summarized", filename)
+    download_text = f"Click here to download summarised {filename}"
+    with open(summarized_path, "rb") as file:
+        pdf_contents = file.read()
+    st.download_button(download_text, pdf_contents, mime="application/pdf")
+
+
+def summarize_and_save(uploaded_file, save_path, filename, summarized_path):
+    save_uploaded_file(uploaded_file, save_path)
+    progress_bar = st.progress(0)
+    extracted_text = extract_text(save_path)
+
+    start = time()
+    extracted_paragraphs = summarize_pdf(extracted_text, progress_bar)
+    print(f"Time taken to summarize {filename}: {time() - start} seconds")
+    write_list_to_pdf(extracted_paragraphs, summarized_path)
+    st.success("File summarised successfully.")
 
 
 def main():
@@ -23,38 +42,16 @@ def main():
         filename = uploaded_file.name
         summarized_path = os.path.join("summarized", filename)
         if os.path.exists(summarized_path):
-            download_text = f"Click here to download summarised {filename}"
-            with open(summarized_path, "rb") as file:
-                pdf_contents = file.read()
-
-            st.download_button(download_text, pdf_contents, mime="application/pdf")
+            download_file(filename)
             return
 
         # Specify the save path
         save_directory = "uploads"  # Specify the desired save directory
         save_path = os.path.join(save_directory, filename)
 
-        # Save the uploaded file
-        save_uploaded_file(uploaded_file, save_path)
-        progress_bar = st.progress(0)
-        # Extract the text from the PDF
-        extracted_text = extract_text(save_path)
-
-        start = time()
-        extracted_paragraphs = summarize_pdf(extracted_text, progress_bar)
-        print(f"Time taken to summarize {filename}: {time() - start} seconds")
-
-        write_list_to_pdf(extracted_paragraphs, summarized_path)
-
-        st.success("File summarised successfully.")
-
         # Download link for the saved file
-        download_text = f"Click here to download summarised {filename}"
-        with open(summarized_path, "rb") as file:
-            pdf_contents = file.read()
-
-        st.download_button(download_text, pdf_contents, mime="application/pdf")
-        uploaded_file = None
+        summarize_and_save(uploaded_file, save_path, filename, summarized_path)
+        download_file(filename)
 
 
 if __name__ == "__main__":

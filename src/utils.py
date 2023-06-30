@@ -1,9 +1,13 @@
 import re
 import textwrap
-from typing import Dict, List
+import logging
+from typing import Dict, List, Tuple
 
 import fitz
 from reportlab.pdfgen import canvas
+
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+LOGGER = logging.getLogger(__name__)
 
 
 def check_if_table(string: str) -> bool:
@@ -74,7 +78,21 @@ def check_if_short_text(text: str) -> bool:
     return total < 3
 
 
-def write_list_to_pdf(strings: Dict[str, str], path_to_pdf: str = "uploads/output.pdf"):
+def draw_string(c: canvas.Canvas, string: str, y: int, items_num: int):
+    c.drawString(20, y, string)
+    y -= 20
+    items_num += 1
+    if items_num == 40:
+        c.showPage()
+        c.setFontSize(10)
+        y = 800
+        items_num = 0
+    return y, items_num
+
+
+def write_list_to_pdf(
+    paragraphs: Dict[str, str], path_to_pdf: str = "uploads/output.pdf"
+):
     """
     Renders text to pdf
     Args:
@@ -86,29 +104,10 @@ def write_list_to_pdf(strings: Dict[str, str], path_to_pdf: str = "uploads/outpu
     c.setFontSize(10)
     y = 800
     items_num = 0
-    max_line_length = 120
-    for string in strings:
-        string = string.replace("\n", " ")
-        if len(string) > max_line_length:
-            wrapped_lines = textwrap.wrap(string, width=max_line_length)
-            for wrapped_line in wrapped_lines:
-                c.drawString(20, y, wrapped_line)
-                y -= 20
-                items_num += 1
-                if items_num == 40:
-                    c.showPage()
-                    c.setFontSize(10)
-                    y = 800
-                    items_num = 0
-        else:
-            c.drawString(20, y, wrapped_line)
-            y -= 20
-            items_num += 1
-            if items_num == 40:
-                c.showPage()
-                c.setFontSize(10)
-                y = 800
-                items_num = 0
+    for k, v in paragraphs.items():
+        y, items_num = draw_string(c, k, y, items_num)
+        for line in textwrap.wrap(v, width=100):
+            y, items_num = draw_string(c, line, y, items_num)
 
     c.save()
 

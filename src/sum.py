@@ -1,11 +1,11 @@
 import concurrent.futures
 from collections import defaultdict
-from typing import List
+from typing import List, Dict
 
 from transformers import pipeline
 
 
-def summarize_text(text):
+def summarize_text(text: str):
     summarizer = pipeline(
         "summarization",
         model="t5-small",
@@ -20,7 +20,7 @@ def summarize_text(text):
     return summarized[0]["summary_text"]
 
 
-def summarize_strings(strings):
+def summarize_strings(strings: str) -> List:
     summarized_strings = []
     for string in strings:
         summarized = summarize_text(string)
@@ -28,14 +28,14 @@ def summarize_strings(strings):
     return summarized_strings
 
 
-def process_paragraph(paragraph):
+def process_paragraph(paragraph: str) -> str:
     if len(paragraph) > 10:
         return summarize_text(paragraph)
     else:
         return paragraph
 
 
-def summarize_pdf(text: List[str], progress_bar):
+def summarize_pdf(text: List[str], progress_bar) -> Dict:
     paragraphs = defaultdict(str)
     key = ""
     for t in text:
@@ -49,7 +49,7 @@ def summarize_pdf(text: List[str], progress_bar):
 
     summarized = {}  # Dictionary to store the summarized paragraphs
 
-    with concurrent.futures.ThreadPoolExecutor(5) as executor:
+    with concurrent.futures.ThreadPoolExecutor() as executor:
         # Submit the summarization tasks in parallel
         futures = [executor.submit(process_paragraph, v) for v in paragraphs.values()]
 
