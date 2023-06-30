@@ -4,6 +4,7 @@ from time import time
 import streamlit as st
 from sum import summarize_pdf
 from utils import extract_text, write_list_to_pdf
+from text_summarization import to_summarize
 
 
 def save_uploaded_file(uploaded_file, save_path):
@@ -36,7 +37,7 @@ def main():
         # Save the uploaded file
         save_uploaded_file(uploaded_file, save_path)
         progress_bar = st.progress(0)
-
+        # Extract the text from the PDF
         extracted_text = extract_text(save_path)
 
         start = time()
